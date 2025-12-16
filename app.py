@@ -190,14 +190,14 @@ def whatsapp_webhook():
 
     if state == STATE_CONFIRM:
         if incoming_msg == "1":
-            save_reserva(data)
-            reset_session(user_id)
+            save_reserva(data)  # Guardar la reserva en archivo
+            reset_session(user_id)  # Resetear la sesión después de confirmar
             msg.body(
                 "Reserva registrada. ✔️\n"
                 "Gracias. Si quieres hacer otra reserva, escribe 1.\n\n" + menu_text()
             )
         elif incoming_msg == "2":
-            reset_session(user_id)
+            reset_session(user_id)  # Cancelar la reserva y resetear la sesión
             msg.body("Reserva cancelada. ❌\n\n" + menu_text())
         else:
             msg.body("Opción inválida. Responde 1 (Confirmar) o 2 (Cancelar).")
