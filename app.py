@@ -2,15 +2,20 @@ import os
 from datetime import datetime
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
+from pymongo import MongoClient
 from dotenv import load_dotenv
 
-
+# Cargar las variables de entorno desde el archivo .env
 load_dotenv()
+
+# Conexión a MongoDB Atlas
+client = MongoClient(os.getenv("MONGODB_URI"))
+db = client['reservas_punto_as']
+reservas_collection = db['reservas']
 
 app = Flask(__name__)
 
 # Estados por usuario (para examen está bien en memoria)
-# key = wa_id (número del usuario), value = {"state": "...", "data": {...}}
 SESSIONS = {}
 
 # Estados
@@ -66,14 +71,17 @@ def reset_session(user_id: str):
     SESSIONS[user_id] = {"state": STATE_MENU, "data": {}}
 
 def save_reserva(data: dict):
-    # Registro simple en archivo (para evidencia)
-    line = (
-        f"{datetime.now().isoformat(timespec='seconds')} | "
-        f"{data.get('nombre','')} | {data.get('cedula','')} | {data.get('telefono','')} | "
-        f"{data.get('cancha','')} | {data.get('fecha','')} | {data.get('hora','')}\n"
-    )
-    with open("reservas_punto_as.txt", "a", encoding="utf-8") as f:
-        f.write(line)
+    # Guardar la reserva en MongoDB
+    reserva = {
+        "nombre": data['nombre'],
+        "cedula": data['cedula'],
+        "telefono": data['telefono'],
+        "cancha": data['cancha'],
+        "fecha": data['fecha'],
+        "hora": data['hora'],
+        "timestamp": datetime.now()
+    }
+    reservas_collection.insert_one(reserva)
 
 @app.post("/webhook")
 def whatsapp_webhook():
@@ -92,11 +100,10 @@ def whatsapp_webhook():
     state = session["state"]
     data = session["data"]
 
-    # Si el usuario escribe "hola" o algo al inicio, lo llevamos al menú
     if state == STATE_MENU:
         if incoming_msg in ["1", "reservar", "reserva"]:
             session["state"] = STATE_NAME
-            msg.body("Perfecto. Escribe tu *nombre completo*:")
+            msg.body("Perfecto. Escribe tu *nombre completo*:") 
         elif incoming_msg in ["2", "info", "informacion", "información"]:
             msg.body(info_text())
         elif incoming_msg in ["3", "ayuda", "help"]:
@@ -115,7 +122,6 @@ def whatsapp_webhook():
         return str(resp)
 
     if state == STATE_CEDULA:
-        # Validación simple (solo longitud y dígitos)
         ced = incoming_msg.replace("-", "").replace(" ", "")
         if not ced.isdigit() or len(ced) < 8:
             msg.body("Cédula inválida.\n\n Escribe solo números (ej: 1234567890):")
@@ -155,7 +161,6 @@ def whatsapp_webhook():
         return str(resp)
 
     if state == STATE_FECHA:
-        # Validación mínima de formato
         parts = incoming_msg.split("/")
         if len(parts) != 3 or not all(p.isdigit() for p in parts):
             msg.body("Formato inválido.\n\n Usa *DD/MM/AAAA* (ej: 25/12/2025):")
@@ -190,24 +195,22 @@ def whatsapp_webhook():
 
     if state == STATE_CONFIRM:
         if incoming_msg == "1":
-            save_reserva(data)  # Guardar la reserva en archivo
-            reset_session(user_id)  # Resetear la sesión después de confirmar
+            save_reserva(data)
+            reset_session(user_id)
             msg.body(
                 "Reserva registrada. ✔️\n"
                 "Gracias. Si quieres hacer otra reserva, escribe 1.\n\n" + menu_text()
             )
         elif incoming_msg == "2":
-            reset_session(user_id)  # Cancelar la reserva y resetear la sesión
+            reset_session(user_id)
             msg.body("Reserva cancelada. ❌\n\n" + menu_text())
         else:
             msg.body("Opción inválida. Responde 1 (Confirmar) o 2 (Cancelar).")
         return str(resp)
 
-    # fallback
     reset_session(user_id)
     msg.body("Reinicié el chat por seguridad.\n\n" + menu_text())
     return str(resp)
 
 if __name__ == "__main__":
-    # Por defecto Flask corre en 5000
     app.run(host="0.0.0.0", port=5000, debug=True)
