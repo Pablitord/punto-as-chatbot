@@ -65,7 +65,7 @@ El chatbot está desplegado en Vercel y puede ser accedido mediante la URL públ
 2. En **"When a message comes in"**, coloca la URL pública de Vercel con /webhook al final, EJ: https://punto-as-chatbot.vercel.app/webhook
 
 ### 2.  **Probar el Bot**:
-Una vez configurado todo, el flujo de la conversación iniciará con enviando un mensaje **"hola**
+Una vez configurado todo, el flujo de la conversación iniciará ingresando el código dado por **Twilio**, seguido, enviando un mensaje **"hola**
 
 **Enlace para probar el Bot**
 
