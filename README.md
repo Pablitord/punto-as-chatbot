@@ -10,13 +10,6 @@ Este proyecto consiste en un chatbot que permite realizar reservas para canchas 
 ## Para probar directamente el chatbot:
 Si deseas probar el chatbot sin configuraciones adicionales, simplemente sigue estos pasos:
 
-1. **Accede al siguiente enlace o escanea el QR**:
-   - [Iniciar chat con el bot en WhatsApp](https://wa.me/14155238886)
-
-2. **Escribe "hola"** para empezar la conversación.
-
-3. El chatbot te guiará a través del proceso de hacer una reserva o ver la información de las canchas.
-
 
 ## Instalación y Configuración:
 
@@ -60,7 +53,7 @@ Mientras se ejecuta app.py, abre una nueva terminar y ejecuta:
 - En el apartado **"When a meesage comes in"**, Añade el webhook de Twilio con la URL dada por ngrok, agregando "/webhook" al final, EJ: "https://unallotted-daxton-summonable.ngrok-free.dev/webhook", ubicar el método **"Post"** y dar clic en **"Save"**
 
 ### 6. **Probar el Bot**:
-Una vez configurado todo, el flujo de la conversación iniciará con enviando un mensaje **"hola**
+Una vez configurado todo, el flujo de la conversación iniciará enviando un mensaje dado por **Twilio**, seguido, enviando un mensaje **"hola**
 
 ## **Despliegue en Vercel**
 El chatbot está desplegado en Vercel y puede ser accedido mediante la URL pública. Solo necesitas configurar el webhook en Twilio con la siguiente URL:
@@ -80,7 +73,7 @@ Una vez configurado todo, el flujo de la conversación iniciará con enviando un
 
 **Número para probar el Bot**
 - **+1 415 523 8886**
-- Con el código  **join alone-jump**
+- Ingresa el codigo dado por Twilio
 - Enviar Mensaje: **"hola"**
    
 
