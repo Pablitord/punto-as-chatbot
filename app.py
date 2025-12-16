@@ -15,7 +15,7 @@ reservas_collection = db['reservas']
 
 app = Flask(__name__)
 
-# Estados por usuario (para examen está bien en memoria)
+# Estados por usuario 
 SESSIONS = {}
 
 # Estados
@@ -90,7 +90,7 @@ def whatsapp_webhook():
     resp = MessagingResponse()
     msg = resp.message()
 
-    # Seguridad UX: reinicio universal
+    # reinicio universal
     if incoming_msg == "0":
         reset_session(user_id)
         msg.body("Listo, reinicié el chat.\n\n" + menu_text())
