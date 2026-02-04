@@ -217,6 +217,19 @@ def save_reserva_to_mongo(user_id: str, data: dict):
         "created_at": now_utc()
     }
     reservas_col.insert_one(doc)
+    
+def reserva_existe(data: dict) -> bool:
+    # Normalización mínima para evitar diferencias por mayúsculas/espacios
+    fecha = str(data.get("fecha", "")).strip()
+    hora = str(data.get("hora", "")).strip()
+    cancha = str(data.get("cancha", "")).strip()
+
+    if not (fecha and hora and cancha):
+        return False
+
+    query = {"fecha": fecha, "hora": hora, "cancha": cancha}
+    return reservas_col.count_documents(query, limit=1) > 0
+
 
 # -----------------------------
 # Webhook
@@ -243,6 +256,16 @@ def whatsapp_webhook():
     if state == "CONFIRM":
         if incoming_msg == "1":
             if is_complete(data):
+                if reserva_existe(data):
+                    msg.body(
+                        "Esa cancha ya está reservada en esa fecha y horario.\n\n"
+                        "Escribe una nueva fecha u horario para continuar.\n"
+                        "Ejemplo: 12/02/2026 18h00-20h00"
+                    )
+                    # Volvemos a chat para que la IA pida/ajuste fecha u hora
+                    save_session(user_id, "CHAT", data)
+                    return str(resp)
+                
                 save_reserva_to_mongo(user_id, data)
                 reset_session(user_id)
                 msg.body("Reserva registrada.\n\n" + menu_text())
@@ -256,6 +279,7 @@ def whatsapp_webhook():
         else:
             msg.body("Opción inválida. Responde 1 (Confirmar) o 2 (Cancelar).")
         return str(resp)
+    
 
     # Atajos tipo menú (sin IA) para que sea más usable
     if incoming_msg in ["1", "reservar", "reserva"]:
