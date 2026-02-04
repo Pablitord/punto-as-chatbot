@@ -69,7 +69,7 @@ Abre una nueva terminal y ejecuta:
    ```bash
    python app.py
    ```
-- **Inicia ngrok para exponer el servidor**
+- **Inicia ngrok para exponer el servidor**:
 Mientras se ejecuta **app.py**, abre una nueva terminal y ejecuta:
 
    ```bash
