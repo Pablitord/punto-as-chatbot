@@ -1,13 +1,19 @@
 # Chatbot de Reservas - Punto AS
 
-Este proyecto consiste en un chatbot que permite realizar reservas para canchas en el **Punto AS** de **Manta, Ecuador**, utilizando un bot de **WhatsApp**. El chatbot permite interactuar con el usuario para hacer reservas de canchas de básquet 3x3 o ecuavóley/vóley sala. El bot está **desplegado en Vercel** y usa **Twilio** para la integración con WhatsApp. Las reservas se almacenan de forma **persistente** en una **base de datos MongoDB Atlas**.
+Este proyecto consiste en un **chatbot conversacional con Inteligencia Artificial** que permite realizar reservas para canchas deportivas del **Punto AS** en **Manta, Ecuador**, a través de **WhatsApp**.
+
+El chatbot utiliza un **modelo de lenguaje (DeepSeek)** para interpretar mensajes en **lenguaje natural**, guiar dinámicamente la conversación y extraer la información necesaria para completar una reserva.  
+Las reservas se almacenan de forma **persistente** en una **base de datos MongoDB Atlas**.
+
+El sistema está **desplegado en la nube con Vercel** y se integra con **WhatsApp mediante Twilio**.
 
 ## Requisitos:
 1. **Python 3.x**
-2. **Twilio** (para enviar mensajes de WhatsApp).
-3. **Flask** (para el backend del chatbot).
-4. **MongoDB Atlas** (para almacenar las reservas).
-5. **Ngrok** o cualquier herramienta para exponer el servidor local (si se ejecuta localmente, aunque no es necesario para Vercel).
+2. **Flask**
+3. **Twilio** (WhatsApp Sandbox)
+4. **MongoDB Atlas**
+5. **DeepSeek API**
+6. **Ngrok** (solo para pruebas locales)z
 
 
 ## Para probar directamente el chatbot:
@@ -19,7 +25,9 @@ Si deseas probar el chatbot sin configuraciones adicionales, simplemente sigue e
 
 2. **Escribe "hola"** para empezar la conversación.
 
-3. El chatbot te guiará a través del proceso de hacer una reserva o ver la información de las canchas.
+3. El chatbot responderá utilizando **IA**, permitiendo frases libres como:
+- “Quiero reservar una cancha de básquet mañana”
+- “Me llamo Juan y quiero jugar vóley”
 
 
 
@@ -44,16 +52,14 @@ Si deseas probar el chatbot sin configuraciones adicionales, simplemente sigue e
    ```bash
    pip install -r requirements.txt
    ```
-### 4. **Configurar MongoDB Atlas:**:
-- **Crear un clúster en MongoDB Atlas:**
-   1. Regístrate en MongoDB Atlas y crea un clúster.
-   2. Crea una base de datos llamada **reservas_punto_as** y una colección llamada **reservas**
-- **Crear archivo .env**
-   1. Crea un archivo **.env** en la raíz de tu proyecto para almacenar tus credenciales de MongoDB Atlas
-   2. Asegúrate de reemplazar **<your_username>**, **<your_password>** con tus credenciales reales.
-   - Ejemplo de Credenciales del Clúster
-   `````bash
-   MONGODB_URI=mongodb+srv://<your_username>:<your_password>@cluster0.mongodb.net/reservas_punto_as?retryWrites=true&w=majority
+### 4. Configurar variables de entorno (.env)
+Configurar variables de entorno (.env)
+   ```bash
+   DEEPSEEK_API_KEY=tu_api_key_deepseek
+MONGODB_URI=mongodb+srv://<usuario>:<password>@cluster.mongodb.net/?retryWrites=true&w=majority
+MONGODB_DB=reservas_punto_as
+MONGODB_COLLECTION=reservas
+
    ```
 
 ### 5. **Ejecutar Servidor (Localmente)**:
@@ -81,6 +87,8 @@ Mientras se ejecuta **app.py**, abre una nueva terminal y ejecuta:
 
 ### 7. **Probar el Bot**:
 Una vez configurado todo, el flujo de la conversación iniciará enviando un mensaje dado por **Twilio**, seguido, enviando un mensaje **"hola**
+
+El chatbot responderá usando IA, sin depender de opciones numéricas fijas.
 
 ## **Despliegue en Vercel**
 El chatbot está desplegado en Vercel y puede ser accedido mediante la URL pública. Solo necesitas configurar el webhook en Twilio con la siguiente URL:
